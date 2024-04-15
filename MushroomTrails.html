@@ -1,0 +1,591 @@
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Mushroom Trails</title> 
+        <script type="module">
+
+        import {OrbitControls} from "./module/OrbitControls_module.js";
+        import {GLTFLoader} from "./module/GLTFLoader_module.js";
+        import zim from "https://zimjs.org/cdn/015/zim_three"; 
+
+const assets =["whoosh.mp3", "mystery.mp3", "levelFinish.mp3", "RewardTone.mp3","click.wav", "IntroInfo.png", "startButton.png", "next.png", "Gloves.png", "GlovesInfo.png", "Knife.png", "KnifeInfo.png","Basket.png", 
+"BasketInfo.png","Reward.png", "RewardInfo.png", "Morels.png","MorelsInfo.png", "FlyAgaric.png", "FlyAgaricInfo.png", 
+"Boletes.png", "BoletesInfo.png", "HoneyAgaric.png","HoneyAgaricInfo.png", "Chanterelle.png","ChanterelleInfo.png"];
+const path ="assets/";
+new Frame(FIT, 1024, 768, light, dark, ready, assets, path);
+function ready() {
+    //THREEJS - INITIATE CAMERA for camera animation
+    const three = new Three({
+        width:window.innerWidth, 
+        height:window.innerHeight, 
+        cameraPosition:new THREE.Vector3(0,0,100),
+        textureActive:true
+    });
+
+    const scene = three.scene;
+    const camera = three.camera;
+    const renderer = three.renderer;
+
+    const canvas = three.canvas;
+    const controls = new OrbitControls(camera, canvas);
+
+    // ZIM setup
+    let startPanel;
+    let backing;
+    let puzzle1;
+    let puzzle2;
+    let puzzle3;
+    let puzzle4;
+    let puzzle5;
+    start(); 
+    function start() {
+        startPanel = new TextureActive({
+            width: W,
+            height: H,
+            color: interstellar.toAlpha(.8),
+            corner: 20
+        }).addTo();
+
+        // // BACK OF PANEL
+        backing = new TextureActive({
+            width:startPanel.width,
+            height:startPanel.height,
+            color:black,
+            corner:20,
+            animated:false,
+            interactive:false
+        }).addTo();
+        TextureActive.makeBacking(backing.width, backing.height).addTo(backing);
+                                                        
+        
+            const intro = new Pic("IntroInfo.png").sca(0.6)
+            .pos(0, 80, CENTER, TOP, startPanel)
+            const startButton = new Pic("startButton.png")
+            .sca(0.5)
+            .pos(0, 150, CENTER, BOTTOM, startPanel)
+            .tap(() => {
+                new Aud("click.wav").play();
+                new Aud("mystery.mp3", null, true).play();
+                animate({
+                    target:camera,
+                    props:{"rotation.y": 360 * RAD},
+                    time: 7,
+                    call:()=>{
+                        scene.remove(canvasWindow);
+                        animate({
+                            target:canvasWindow1.material,
+                            props:{opacity:0},
+                            time:1
+                        })
+                        scene.add(canvasWindow1);
+                        animate({
+                            target:canvasWindow1.material,
+                            props:{opacity:1},
+                            time:1
+                        })
+                    }
+                    
+                })   
+            });
+    }
+
+
+    puzzle1 = new TextureActive({
+        width:W,
+        height:H,
+        color:interstellar.toAlpha(.8),
+        corner:20,
+        interactive:true
+    }).addTo();
+
+    const scrambler1 = new Scrambler(chop(new Pic("Morels.png"),1,6))
+            .scaleTo(puzzle1,90,90)
+            .center(puzzle1);
+
+            scrambler1.on("complete", ()=>{
+            new Aud("whoosh.mp3").play();
+            // animate({
+            //     target:backing,
+            //     wait:.5,
+            //     props:{"rotation.y":360*3*RAD}, 
+            //     ease:"backInOut",
+            //     time:1.5});
+            animate({
+                target:canvasWindow1,
+                wait:.5,
+                props:{"rotation.y":360*3*RAD}, 
+                ease:"backInOut",
+                time:1.5,
+                call:()=>{
+                    canvasWindow1.rotation.y=0;
+                    scrambler1.removeFrom(puzzle1);
+                    const puzzle1Info = new Pic("MorelsInfo.png");
+                    puzzle1Info.scaleTo(puzzle1,90,90).center(puzzle1);
+                    const puzzle1next = new Pic("next.png")
+                    .sca(0.5)
+                    .pos(40, 100, RIGHT, TOP, puzzle1)
+                    .tap(() => {
+                        new Aud("click.wav").play();
+                        puzzle1next.removeFrom();
+                        scene.remove(canvasWindow1);
+                        animate({
+                            target:canvasWindow1.material,
+                            props:{opacity:0},
+                            time:1
+                        })
+                        scene.add(canvasWindow2);
+                        animate({
+                            target:canvasWindow2.material,
+                            props:{opacity:1},
+                            time:1
+                        })
+                    })   
+                } 
+            });
+        });
+
+        puzzle2 = new TextureActive({
+        width:W,
+        height:H,
+        color:interstellar.toAlpha(.8),
+        corner:20,
+        interactive:true
+    }).addTo();
+
+    const scrambler2 = new Scrambler(chop(new Pic("Chanterelle.png"),2,4))
+            .scaleTo(puzzle2,90,90)
+            .center(puzzle2);
+
+            scrambler2.on("complete", ()=>{
+            new Aud("whoosh.mp3").play();
+            animate({
+                target:canvasWindow2,
+                wait:.5,
+                props:{"rotation.y":360*3*RAD}, 
+                ease:"backInOut",
+                time:1.5,
+                call:()=>{
+
+                    canvasWindow2.rotation.y=0;
+                    scrambler2.removeFrom(puzzle2);
+                    const puzzle2Info = new Pic("ChanterelleInfo.png");
+                    puzzle2Info.scaleTo(puzzle2,90,90).center(puzzle2);
+                    const puzzle2next = new Pic("next.png")
+                    .sca(0.5)
+                    .pos(40, 100, RIGHT, TOP, puzzle2)
+                    .tap(() => {
+                        new Aud("click.wav").play();
+                        new Aud("levelFinish.mp3").play();
+                        puzzle2next.removeFrom();
+                        puzzle2Info.removeFrom();
+                        const particles = new Emitter({
+                            wait:1,
+                            obj:[
+                                new Circle(8, [red, blue, yellow, purple, green]),
+                            ],
+                            interval:.02, 
+                            life:3,
+                            decayTime:0.5,
+                            animation:{props:{scale:4}, time:2, ease:"bounceOut"} 
+                            })
+                            .pos(0, 100, CENTER, TOP, puzzle2)
+                            .sca(2).spurt(50);
+                            const Knife = new Pic("Knife.png").sca(0.7).pos(0, 100, CENTER, TOP, puzzle2)
+                        .animate({
+                            props:{alpha:0, scale:0},
+                            time:.3,
+                            from:true,
+                        });
+                            const KnifeInfo = new Pic("KnifeInfo.png").sca(0.7).pos(0, 400, CENTER, TOP, puzzle2)
+                            .animate({
+                            wait:2,
+                            props:{alpha:0},
+                            time:.7,
+                            from:true
+                        });
+                        const Knifenext = new Pic("next.png")
+                        .sca(0.5)
+                        .pos(40, 100, RIGHT, TOP, puzzle2)
+                        .tap(() => {
+                            new Aud("click.wav").play();
+                            Knifenext.removeFrom();
+                            scene.remove(canvasWindow2);
+                            scene.add(canvasWindow3);
+                            animate({
+                                target:canvasWindow3.material,
+                                props:{opacity:1},
+                                time:1
+                            })
+                        })
+                    })   
+                } 
+            });
+        });
+
+        puzzle3 = new TextureActive({
+        width:W,
+        height:H,
+        color:interstellar.toAlpha(.8),
+        corner:20,
+        interactive:true
+    }).addTo();
+
+    const scrambler3 = new Scrambler(chop(new Pic("FlyAgaric.png"),3,4))
+            .scaleTo(puzzle3,90,90)
+            .center(puzzle3);
+
+            scrambler3.on("complete", ()=>{
+            new Aud("whoosh.mp3").play();
+            animate({
+                target:canvasWindow3,
+                wait:.5,
+                props:{"rotation.y":360*3*RAD}, 
+                ease:"backInOut",
+                time:1.5,
+                call:()=>{
+
+                    canvasWindow3.rotation.y=0;
+                    scrambler3.removeFrom(puzzle3);
+                    const puzzle3Info = new Pic("FlyAgaricInfo.png");
+                    puzzle3Info.scaleTo(puzzle3,90,90).center(puzzle3);
+                    const puzzle3next = new Pic("next.png")
+                    .sca(0.5)
+                    .pos(40, 100, RIGHT, TOP, puzzle3)
+                    .tap(() => {
+                        new Aud("click.wav").play();
+                        new Aud("levelFinish.mp3").play();
+                        puzzle3next.removeFrom();
+                        puzzle3Info.removeFrom();
+                        const particles2 = new Emitter({
+                            wait:1,
+                            obj:[
+                                new Circle(8, [red, blue, yellow, purple, green]),
+                            ],
+                            interval:.02, 
+                            life:3,
+                            decayTime:0.5,
+                            animation:{props:{scale:4}, time:2, ease:"bounceOut"} 
+                            })
+                            .pos(0, 100, CENTER, TOP, puzzle3)
+                            .sca(2).spurt(50);
+                            const gloves = new Pic("Gloves.png").sca(0.7).pos(0, 100, CENTER, TOP, puzzle3)
+                        .animate({
+                            props:{alpha:0, scale:0},
+                            time:.3,
+                            from:true,
+                        });
+                            const glovesInfo = new Pic("GlovesInfo.png").sca(0.7).pos(0, 400, CENTER, TOP, puzzle3)
+                            .animate({
+                            wait:2,
+                            props:{alpha:0},
+                            time:.7,
+                            from:true
+                        });
+                        const glovesnext = new Pic("next.png")
+                        .sca(0.5)
+                        .pos(40, 100, RIGHT, TOP, puzzle3)
+                        .tap(() => {
+                            new Aud("click.wav").play();
+                            glovesnext.removeFrom();
+                            scene.remove(canvasWindow3);
+                            scene.add(canvasWindow4);
+                            animate({
+                                target:canvasWindow4.material,
+                                props:{opacity:1},
+                                time:1
+                            })
+                        })
+                    })   
+                } 
+            });
+        });
+
+        puzzle4 = new TextureActive({
+        width:W,
+        height:H,
+        color:interstellar.toAlpha(.8),
+        corner:20,
+        interactive:true
+    }).addTo();
+
+    const scrambler4 = new Scrambler(chop(new Pic("Boletes.png"),4,4))
+            .scaleTo(puzzle4,90,90)
+            .center(puzzle4);
+
+            scrambler4.on("complete", ()=>{
+            new Aud("whoosh.mp3").play();
+            animate({
+                target:canvasWindow4,
+                wait:.5,
+                props:{"rotation.y":360*3*RAD}, 
+                ease:"backInOut",
+                time:1.5,
+                call:()=>{
+
+                    canvasWindow4.rotation.y=0;
+                    scrambler4.removeFrom(puzzle4);
+                    const puzzle4Info = new Pic("BoletesInfo.png");
+                    puzzle4Info.scaleTo(puzzle4,90,90).center(puzzle4);
+                    const puzzle4next = new Pic("next.png")
+                    .sca(0.5)
+                    .pos(40, 100, RIGHT, TOP, puzzle4)
+                    .tap(() => {
+                        new Aud("click.wav").play();
+                        new Aud("levelFinish.mp3").play();
+                        puzzle4next.removeFrom();
+                        puzzle4Info.removeFrom();
+                        const particles3 = new Emitter({
+                            wait:1,
+                            obj:[
+                                new Circle(8, [red, blue, yellow, purple, green]),
+                            ],
+                            interval:.02, 
+                            life:3,
+                            decayTime:0.5,
+                            animation:{props:{scale:4}, time:2, ease:"bounceOut"} 
+                            })
+                            .pos(0, 100, CENTER, TOP, puzzle4)
+                            .sca(2).spurt(50);
+                            const Basket = new Pic("Basket.png").sca(0.7).pos(0, 70, CENTER, TOP, puzzle4)
+                        .animate({
+                            props:{alpha:0, scale:0},
+                            time:.3,
+                            from:true,
+                        });
+                            const BasketInfo = new Pic("BasketInfo.png").sca(0.7).pos(0, 400, CENTER, TOP, puzzle4)
+                            .animate({
+                            wait:2,
+                            props:{alpha:0},
+                            time:.7,
+                            from:true
+                        });
+                        const basketnext = new Pic("next.png")
+                        .sca(0.5)
+                        .pos(40, 100, RIGHT, TOP, puzzle4)
+                        .tap(() => {
+                            new Aud("click.wav").play();
+                            basketnext.removeFrom();
+                            scene.remove(canvasWindow4);
+                            scene.add(canvasWindow5);
+                            animate({
+                                target:canvasWindow5.material,
+                                props:{opacity:1},
+                                time:1
+                            })
+                        })
+                    })   
+                } 
+            });
+        });
+
+        puzzle5 = new TextureActive({
+        width:W,
+        height:H,
+        color:interstellar.toAlpha(.8),
+        corner:20,
+        interactive:true
+    }).addTo();
+
+    const scrambler5 = new Scrambler(chop(new Pic("HoneyAgaric.png"),5,5))
+            .scaleTo(puzzle5,90,90)
+            .center(puzzle5);
+
+            scrambler5.on("complete", ()=>{
+            new Aud("whoosh.mp3").play();
+            animate({
+                target:canvasWindow5,
+                wait:.5,
+                props:{"rotation.y":360*3*RAD}, 
+                ease:"backInOut",
+                time:1.5,
+                call:()=>{
+
+                    canvasWindow5.rotation.y=0;
+                    scrambler5.removeFrom(puzzle5);
+                    const puzzle5Info = new Pic("HoneyAgaricInfo.png");
+                    puzzle5Info.scaleTo(puzzle5,90,90).center(puzzle5);
+                    const puzzle5next = new Pic("next.png")
+                    .sca(0.5)
+                    .pos(40, 100, RIGHT, TOP, puzzle5)
+                    .tap(() => {
+                        new Aud("click.wav").play();
+                        new Aud("RewardTone.mp3").play();
+                        puzzle5next.removeFrom();
+                        puzzle5Info.removeFrom();
+                        const particles4 = new Emitter({
+                            wait:1,
+                            obj:[
+                                new Circle(8, [red, blue, yellow, purple, green]),
+                            ],
+                            interval:.02, 
+                            life:3,
+                            decayTime:0.5,
+                            animation:{props:{scale:4}, time:2, ease:"bounceOut"} 
+                            })
+                            .pos(0, 100, CENTER, TOP, puzzle5)
+                            .sca(2).spurt(50);
+                            const reward = new Pic("Reward.png").sca(0.7).pos(0, 70, CENTER, TOP, puzzle5)
+                        .animate({
+                            props:{alpha:0, scale:0},
+                            time:.3,
+                            from:true,
+                        });
+                            const rewardInfo = new Pic("RewardInfo.png").sca(0.7).pos(0, 330, CENTER, TOP, puzzle5)
+                            .animate({
+                            wait:2,
+                            props:{alpha:0},
+                            time:.7,
+                            from:true
+                        });
+                    })   
+                } 
+            });
+        });
+
+
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~
+    // THREEJS
+    // SKYBOX
+    const skyTexture = new THREE.TextureLoader().load("assets/fantasyMushroomLand.jpeg");
+    const skyBoxGeometry = new THREE.SphereGeometry(100000, 32, 32);
+    const skyBoxMaterial = new THREE.MeshBasicMaterial({map:skyTexture, side:THREE.BackSide});
+    const skyBox = new THREE.Mesh(skyBoxGeometry, skyBoxMaterial);
+    scene.add(skyBox);
+
+    // TEXTUREACTIVES
+    const ta = new TextureActives([startPanel, backing, puzzle1, puzzle2, puzzle3, puzzle4, puzzle5], THREE, three, renderer, scene, camera, controls);
+    const canvasWindow = three.makePanel({
+        textureActive:startPanel, 
+        textureActives:ta, 
+        curve:10,
+        doubleSide:true,
+        scale: 0.5,
+        opacity:1
+    });   
+    canvasWindow.position.set(0, 20, -300);   
+               
+    timeout(0.5, ()=>{
+        scene.add(canvasWindow);
+    })
+
+    // //backing
+    const canvasWindowBacking = three.makePanel({
+        textureActive:backing, 
+        textureActives:ta, 
+        curve:-10,
+        doubleSide:false,
+        scale: 0.5
+    });
+    
+    canvasWindowBacking.position.set(0, 20, -302); 
+    canvasWindowBacking.rotation.y = Math.PI;
+    scene.add(canvasWindowBacking);  
+               
+    
+
+    //TEXTUREACTIVES puzzle1
+    const canvasWindow1 = three.makePanel({
+        textureActive:puzzle1, 
+        textureActives:ta, 
+        curve:10,
+        doubleSide:false,
+        scale: 0.5,
+        opacity:0
+    });
+    
+    canvasWindow1.position.set(0, 20, -300); 
+ 
+    //TEXTUREACTIVES2 puzzle2
+    const canvasWindow2 = three.makePanel({
+        textureActive:puzzle2, 
+        textureActives:ta, 
+        curve:10,
+        doubleSide:false,
+        scale: 0.5
+    });
+
+    canvasWindow2.position.set(0, 20, -300);
+
+    //TEXTUREACTIVES2 puzzle3
+    const canvasWindow3 = three.makePanel({
+        textureActive:puzzle3, 
+        textureActives:ta, 
+        curve:10,
+        doubleSide:false,
+        scale: 0.5
+    });
+
+    canvasWindow3.position.set(0, 20, -300);
+
+    //TEXTUREACTIVES2 puzzle4
+    const canvasWindow4 = three.makePanel({
+        textureActive:puzzle4, 
+        textureActives:ta, 
+        curve:10,
+        doubleSide:false,
+        scale: 0.5
+    });
+
+    canvasWindow4.position.set(0, 20, -300);
+
+    //TEXTUREACTIVES2 puzzle5
+    const canvasWindow5 = three.makePanel({
+        textureActive:puzzle5, 
+        textureActives:ta, 
+        curve:10,
+        doubleSide:false,
+        scale: 0.5
+    });
+
+    canvasWindow5.position.set(0, 20, -300);
+  
+        // MATERIAL
+        const material = new THREE.MeshPhongMaterial({color:0x666666}); // needs light and is glossy
+
+        const light3 = new THREE.AmbientLight(0xaaaaFF, 5.5); 
+        scene.add(light3);
+
+        const directionalLight = new THREE.DirectionalLight(0xaaaaff, 0.8); 
+        directionalLight.position.set(0, 1, 0);
+        scene.add(directionalLight);
+
+        // ANIMATION
+        function render() {
+
+            
+            renderer.render(scene, camera); 
+                           
+            requestAnimationFrame(render);
+        }
+        render();
+        
+    } 
+        </script>
+        
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <style>
+            body {margin:0px;}
+            canvas {width:100%; height:100%}
+        </style>
+
+
+    </head>
+    <body>
+        
+    </body>
+</html</body>
+</html>
+
+// MODEL 
+// const loader = new GLTFLoader();
+// loader.load("forest2/result.gltf", (gltf)=>{
+//     const scale = 4;
+//     gltf.scene.scale.set(scale, scale, scale);
+    
+// 	scene.add( gltf.scene);
+// }, undefined, error=>{
+//     console.error(error);
+// });
